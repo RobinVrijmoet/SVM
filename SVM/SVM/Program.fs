@@ -5,15 +5,32 @@ open ParserUtils
 open SVM
 open Microsoft.FSharp.Text.Lexing
 
-let rec virtualmachine((parsedAST : Instruction list),( memorysize : int))=
-    //printfn "%A" parsedAST.Head
-    //printfn " hello"
-    //match parsedAST.Head with 
-    //| Mov( x,y,z)-> printfn " TESTING  THIS IS A MOV"
-    //| _ -> ()
-    //if(match parsedAST.Head with |Mov) then printfn "%A" parsedAST.Head
-    let memory = List<SVMAST.Literal> 
-    if not parsedAST.Tail.IsEmpty then virtualmachine(parsedAST.Tail,memorysize)
+//Every instruction is handle in here: 
+let handle(current : Instruction, memory:array<Literal>)=
+    match current with
+    | Mov( x,y,z)-> printfn " TESTING  THIS IS A MOV"
+    | Nop(x)-> printfn "..."
+    | And( x,y,z)-> printfn "and.."
+    | _ -> ()
+
+
+//(recursive function that analyses the list line by line(programm counter->instructionlist)
+let rec virtualmachine(parsedAST : Instruction list,memorysize : int,memory:array<Literal>,pc : int)=
+    
+    handle(parsedAST.[pc],memory)
+    if not parsedAST.Tail.IsEmpty then virtualmachine(parsedAST.Tail,memorysize,memory,pc+1)
+
+
+
+
+    
+//(set memory etc??)
+let initiate((parsedAST : Instruction list),( memorysize : int))=
+    //let memory =  [ for i in 1 .. memorysize -> memorysize @ Literal.Address ]
+    
+    let memory : Literal[] = Array.zeroCreate memorysize
+    virtualmachine(parsedAST,memorysize,memory,0)
+
 
 
 let parseFile (fileName : string) =
